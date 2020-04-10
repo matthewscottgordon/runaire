@@ -8,4 +8,9 @@ edition = "2018"
 
 [dependencies]
 rocket = "0.4"
-rusqlite = "0.22"
+rusqlite = "0.14"
+
+[dependencies.rocket_contrib]
+version = "0.4"
+default-features = false
+features = ["sqlite_pool"]
