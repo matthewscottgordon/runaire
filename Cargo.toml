@@ -9,8 +9,11 @@ edition = "2018"
 [dependencies]
 rocket = "0.4"
 rusqlite = "0.14"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
 
 [dependencies.rocket_contrib]
 version = "0.4"
 default-features = false
-features = ["sqlite_pool"]
+features = ["sqlite_pool", "handlebars_templates"]

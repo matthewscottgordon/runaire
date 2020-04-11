@@ -3,6 +3,8 @@
 use rocket::config::{Config, Environment, Value};
 use rocket::{get, routes};
 use rocket_contrib;
+use rocket_contrib::templates::Template;
+use serde_derive::Serialize;
 
 use std::collections::HashMap;
 use std::env;
@@ -13,9 +15,22 @@ mod database;
 #[rocket_contrib::database("todo_db")]
 struct DbConn(rusqlite::Connection);
 
+#[derive(Serialize)]
+pub struct ToDoItem {
+    name: String,
+    description: String,
+    is_done: bool,
+}
+
+#[derive(Serialize)]
+struct TemplateContext {
+    todo_items: Vec<ToDoItem>,
+}
+
 #[get("/")]
-fn index(conn: DbConn) -> &'static str {
-    "Hello, world!"
+fn index(conn: DbConn) -> Result<Template, rusqlite::Error> {
+    let todo_items = database::get_all_todo_items(&*conn)?;
+    Ok(Template::render("index", &TemplateContext { todo_items }))
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
@@ -43,6 +58,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     rocket::custom(config)
         .mount("/", routes![index])
         .attach(DbConn::fairing())
+        .attach(Template::fairing())
         .launch();
 
     Ok(())

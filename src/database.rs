@@ -1,6 +1,8 @@
 use rusqlite::types::ToSql;
 use rusqlite::{Connection, Result};
 
+use crate::ToDoItem;
+
 use std::fmt::Debug;
 use std::path::Path;
 
@@ -35,4 +37,22 @@ pub fn init_database<P: AsRef<Path> + Debug>(db_file_path: P) -> Result<()> {
     populate_db_with_test_data(&db_file_path)?;
 
     Ok(())
+}
+
+pub fn get_all_todo_items(conn: &Connection) -> Result<Vec<ToDoItem>> {
+    let mut statement = conn.prepare_cached(
+        "SELECT name, description, is_done
+             FROM todo_items;",
+    )?;
+    let result_iter = statement.query_map(&[], |row| {
+        let name = row.get_checked("name")?;
+        let description = row.get_checked("description")?;
+        let is_done = row.get_checked("is_done")?;
+        Ok(ToDoItem {
+            name,
+            description,
+            is_done,
+        })
+    })?;
+    result_iter.flatten().collect()
 }
