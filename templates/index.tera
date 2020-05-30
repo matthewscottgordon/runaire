@@ -5,9 +5,9 @@
   </head>
   <body>
     <table>
-{{~#each todo_items}}
-      <tr><td>{{name}}</td><tr>
-{{~/each}}
+{% for todo_item in todo_items %}
+      <tr><td>{{todo_item.name}}</td><tr>
+{% endfor %}
     </table>
   </body>
 </html>
