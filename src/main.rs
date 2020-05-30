@@ -4,6 +4,7 @@ use rocket::config::{Config, Environment, Value};
 use rocket::{get, routes};
 use rocket_contrib;
 use rocket_contrib::templates::Template;
+use rocket_contrib::serve::StaticFiles;
 use serde_derive::Serialize;
 
 use std::collections::HashMap;
@@ -57,6 +58,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 
     rocket::custom(config)
         .mount("/", routes![index])
+        .mount("/static", StaticFiles::from("static"))
         .attach(DbConn::fairing())
         .attach(Template::fairing())
         .launch();
