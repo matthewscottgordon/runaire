@@ -27,8 +27,8 @@ struct TemplateContext {
     todo_items: Vec<ToDoItem>,
 }
 
-#[get("/")]
-fn index(conn: DbConn) -> Result<Json<Vec<ToDoItem>>, rusqlite::Error> {
+#[get("/list")]
+fn get_list(conn: DbConn) -> Result<Json<Vec<ToDoItem>>, rusqlite::Error> {
     let todo_items = database::get_all_todo_items(&*conn)?;
     Ok(Json(todo_items))
 }
@@ -56,8 +56,8 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         .unwrap();
 
     rocket::custom(config)
-        .mount("/", routes![index])
-        .mount("/static", StaticFiles::from("static"))
+        .mount("/api", routes![get_list])
+        .mount("/", StaticFiles::from("react_app"))
         .attach(DbConn::fairing())
         .launch();
 
