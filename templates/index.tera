@@ -9,5 +9,6 @@
       <tr><td>{{todo_item.name}}</td><tr>
 {% endfor %}
     </table>
+    <img src="/static/add.svg" alt="Add item." style="width:1em">
   </body>
 </html>
