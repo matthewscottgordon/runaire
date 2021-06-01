@@ -2,8 +2,7 @@
 
 use rocket::config::{Config, Environment, Value};
 use rocket::{get, routes};
-use rocket_contrib;
-use rocket_contrib::templates::Template;
+use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use serde_derive::Serialize;
 
@@ -29,9 +28,9 @@ struct TemplateContext {
 }
 
 #[get("/")]
-fn index(conn: DbConn) -> Result<Template, rusqlite::Error> {
+fn index(conn: DbConn) -> Result<Json<Vec<ToDoItem>>, rusqlite::Error> {
     let todo_items = database::get_all_todo_items(&*conn)?;
-    Ok(Template::render("index", &TemplateContext { todo_items }))
+    Ok(Json(todo_items))
 }
 
 fn main() -> Result<(), Box<dyn error::Error>> {
@@ -60,7 +59,6 @@ fn main() -> Result<(), Box<dyn error::Error>> {
         .mount("/", routes![index])
         .mount("/static", StaticFiles::from("static"))
         .attach(DbConn::fairing())
-        .attach(Template::fairing())
         .launch();
 
     Ok(())
